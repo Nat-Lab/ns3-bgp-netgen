@@ -39,7 +39,7 @@ typedef enum MinorType {
     KW_PEER,
     KW_PEERS,
     KW_ROUTE,
-    KW_ROUTERS,
+    KW_ROUTES,
     KW_CONNECT,
     KW_ADDRESS,
     KW_VIA,
@@ -57,6 +57,7 @@ typedef struct LexicalItem {
 
 typedef std::vector<LexicalItem> LexicalItems;
 typedef std::tuple<bool, LexicalItem*> LexOut;
+typedef std::tuple<bool, std::string> LexResult;
 typedef LexOut (*Lexer) (std::string &in);
 typedef std::vector<Lexer> Lexers;
 
@@ -72,6 +73,6 @@ LexOut lex_keyword(std::string &in);
 LexOut lex_token(std::string &in);
 LexOut lex_bool(std::string &in);
 
-bool lexer(std::string &in, LexicalItems &out);
+LexResult lexer(const std::string &in_c, LexicalItems &out);
 
 #endif // BGP_CONF_L_H_

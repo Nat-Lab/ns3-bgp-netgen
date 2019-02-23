@@ -87,7 +87,7 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network|prefix|tap(_(name|mode))?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log)");
+    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log )");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
@@ -96,25 +96,25 @@ LexOut lex_keyword(std::string &in) {
         lex_item->item = m_kw[0];
         str_shift(in, lex_item->item.length());
 
-        if (lex_item->item == "network") lex_item->mtype = MinorType::KW_NETWORK;
-        if (lex_item->item == "prefix") lex_item->mtype = MinorType::KW_PREFIX;
-        if (lex_item->item == "tap") lex_item->mtype = MinorType::KW_TAP;
-        if (lex_item->item == "tap_name") lex_item->mtype = MinorType::KW_TAP_NAME;
-        if (lex_item->item == "tap_mode") lex_item->mtype = MinorType::KW_TAP_MODE;
-        if (lex_item->item == "router") lex_item->mtype = MinorType::KW_ROUTER;
-        if (lex_item->item == "as") lex_item->mtype = MinorType::KW_AS;
-        if (lex_item->item == "dev") lex_item->mtype = MinorType::KW_DEV;
-        if (lex_item->item == "device") lex_item->mtype = MinorType::KW_DEVICE;
-        if (lex_item->item == "devices") lex_item->mtype = MinorType::KW_DEVICES;
-        if (lex_item->item == "peer") lex_item->mtype = MinorType::KW_PEER;
-        if (lex_item->item == "peers") lex_item->mtype = MinorType::KW_PEERS;
-        if (lex_item->item == "route") lex_item->mtype = MinorType::KW_ROUTE;
-        if (lex_item->item == "routes") lex_item->mtype = MinorType::KW_ROUTERS;
-        if (lex_item->item == "connect") lex_item->mtype = MinorType::KW_CONNECT;
-        if (lex_item->item == "address") lex_item->mtype = MinorType::KW_ADDRESS;
-        if (lex_item->item == "via") lex_item->mtype = MinorType::KW_VIA;
-        if (lex_item->item == "options") lex_item->mtype = MinorType::KW_OPTIONS;
-        if (lex_item->item == "log") lex_item->mtype = MinorType::KW_LOG;
+        if (lex_item->item == "network ") lex_item->mtype = MinorType::KW_NETWORK;
+        if (lex_item->item == "prefix ") lex_item->mtype = MinorType::KW_PREFIX;
+        if (lex_item->item == "tap ") lex_item->mtype = MinorType::KW_TAP;
+        if (lex_item->item == "tap_name ") lex_item->mtype = MinorType::KW_TAP_NAME;
+        if (lex_item->item == "tap_mode ") lex_item->mtype = MinorType::KW_TAP_MODE;
+        if (lex_item->item == "router ") lex_item->mtype = MinorType::KW_ROUTER;
+        if (lex_item->item == "as ") lex_item->mtype = MinorType::KW_AS;
+        if (lex_item->item == "dev ") lex_item->mtype = MinorType::KW_DEV;
+        if (lex_item->item == "device ") lex_item->mtype = MinorType::KW_DEVICE;
+        if (lex_item->item == "devices ") lex_item->mtype = MinorType::KW_DEVICES;
+        if (lex_item->item == "peer ") lex_item->mtype = MinorType::KW_PEER;
+        if (lex_item->item == "peers ") lex_item->mtype = MinorType::KW_PEERS;
+        if (lex_item->item == "route ") lex_item->mtype = MinorType::KW_ROUTE;
+        if (lex_item->item == "routes ") lex_item->mtype = MinorType::KW_ROUTES;
+        if (lex_item->item == "connect ") lex_item->mtype = MinorType::KW_CONNECT;
+        if (lex_item->item == "address ") lex_item->mtype = MinorType::KW_ADDRESS;
+        if (lex_item->item == "via ") lex_item->mtype = MinorType::KW_VIA;
+        if (lex_item->item == "options ") lex_item->mtype = MinorType::KW_OPTIONS;
+        if (lex_item->item == "log ") lex_item->mtype = MinorType::KW_LOG;
 
         return LexOut (true, lex_item);
 
@@ -181,7 +181,8 @@ LexOut lex_bool(std::string &in) {
     } else return LexOut (false, NULL);
 }
 
-bool lexer(std::string &in, LexicalItems &out) {
+LexResult lexer(const std::string &in_c, LexicalItems &out) {
+    std::string in (in_c);
     Lexers lexs;
     lexs.push_back(&lex_comment);
     lexs.push_back(&lex_keyword);
@@ -195,15 +196,12 @@ bool lexer(std::string &in, LexicalItems &out) {
     while (in.length() > 0) {
         eat_garbage(in);
         auto r = any(lexs, in);
-        if(!std::get<0> (r)) {
-            std::cerr << "lexer: stopped at: " << in.substr(0, 100) << "..." << std::endl;
-            return false;
-        } else {
+        if(!std::get<0> (r)) return LexResult (false, in);
+        else {
             auto item = std::get<1>(r);
             if (item->type != Type::IGNORE) out.push_back(*item);
         }
     }
 
-
-    return true;
+    return LexResult (true, in);;
 }
