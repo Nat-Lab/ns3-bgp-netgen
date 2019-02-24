@@ -9,7 +9,6 @@ To use it, do `./netgen config.conf > network.cc`
 
 ### Configuration
 
-
 In the config, everything on a line after `#` is a comment, whitespace characters are treated as a single space. If options for a variable has variable length, they are grouped using the `{ }` brackets. Each option is terminated by a `;`. 
 
 Here is an example of a config file. It defines a network with two routes and three networks. `home_router` and `office_router` have their own networks. (`10.254.0.0/24` for home and `10.254.3.0/24` for office.) And they have a BGP peering session on `10.254.2.0/24` to exchange that routing information.
@@ -60,7 +59,7 @@ router office_router {
 }
 ```
 
-###Blocks
+### Blocks
 
 In the root of the configuration document, three variables can be set. `options` for options, `network` for defining a network, and `router` for defining a router. 
 
@@ -84,9 +83,9 @@ option | required? | description | example
 ---|---|---|---
 prefix | yes | The network prefix of this netowrk | `prefix 10.254.0.0/24;`
 tap | no | Enable `TapBridge` on this network. | `tap on;`
-tap_name | if `tap on;`| The name of TAP interface. | `tap_name tap-ns3-in;`
-tap_mode | if `tap on;` | Mode of `TapBridge`. See [here](https://www.nsnam.org/docs/release/3.29/models/html/tap.html). | `tap_mode UseBridge;`
-tap_address | if `tap on;` | Address on TAP interface. | `tap_address 10.254.0.1/24;`
+tap\_name | if `tap on;`| The name of TAP interface. | `tap_name tap-ns3-in;`
+tap\_mode | if `tap on;` | Mode of `TapBridge`. See [here](https://www.nsnam.org/docs/release/3.29/models/html/tap.html). | `tap_mode UseBridge;`
+tap\_address | if `tap on;` | Address on TAP interface. | `tap_address 10.254.0.1/24;`
 
 For example:
 
@@ -110,7 +109,7 @@ option | required? | description | example
 ---|---|---|---
 as | no | BGP ASN of this router | `as 65001;`
 devices | no | List of devices. | n/a
-peers | no`| List of BGP peers. | n/a
+peers | no | List of BGP peers. | n/a
 routes | no | List of routes to insert to BGP NLRI. | n/a
 
 #### The `devices {}` block
