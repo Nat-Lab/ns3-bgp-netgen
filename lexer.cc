@@ -87,7 +87,7 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address )");
+    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address |passive)");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
@@ -116,6 +116,7 @@ LexOut lex_keyword(std::string &in) {
         if (lex_item->item == "via ") lex_item->mtype = MinorType::KW_VIA;
         if (lex_item->item == "options ") lex_item->mtype = MinorType::KW_OPTIONS;
         if (lex_item->item == "log ") lex_item->mtype = MinorType::KW_LOG;
+        if (lex_item->item == "passive") lex_item->mtype = MinorType::KW_PASSIVE;
 
         return LexOut (true, lex_item);
 

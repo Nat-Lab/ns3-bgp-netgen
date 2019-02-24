@@ -88,7 +88,8 @@ void generate (SimulationConfigurtion &conf) {
 
         for (auto peer : router.peers) {
             std::string dev_id_var = "_dev_" + router.name + "_" + peer.device + "_id";
-            printf("    %s.AddPeer(Ipv4Address(\"%s\"), %d, %s);\n", bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
+            if (peer.passive) printf("    %s.AddPeer(Ipv4Address(\"%s\"), %d, %s, true);\n", bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
+            else printf("    %s.AddPeer(Ipv4Address(\"%s\"), %d, %s);\n", bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
         }
             
         for (auto route : router.routes) {

@@ -38,6 +38,7 @@ typedef enum MinorType {
     KW_DEVICES,
     KW_PEER,
     KW_PEERS,
+    KW_PASSIVE,
     KW_ROUTE,
     KW_ROUTES,
     KW_CONNECT,
