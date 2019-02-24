@@ -9,6 +9,8 @@ LexOut eat_garbage(std::string &in) {
         std::string space = m_space[0];
         str_shift(in, space.length());
     }
+
+    return LexOut (false, NULL);
 }
 
 std::string str_shift(std::string &str, uint32_t n) {
