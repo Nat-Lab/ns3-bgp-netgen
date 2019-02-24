@@ -257,6 +257,8 @@ ParOut par_router (const LexicalItems &in, uint32_t offset, SimulationConfigurti
                 offset = std::get<1> (ret);
                 if (!(std::get<0> (ret))) return ret;
                 r.devices = devs;
+                parsed = true;
+                continue;
             }
             case MinorType::KW_PEERS: {
                 Peers peers;
