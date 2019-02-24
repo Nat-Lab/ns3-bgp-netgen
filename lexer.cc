@@ -164,7 +164,7 @@ LexOut lex_token(std::string &in) {
 }
 
 LexOut lex_bool(std::string &in) {
-    std::regex r_token ("^(on|off|true|false)");
+    std::regex r_token ("^(on;|off;|true;|false;|on |off |true |false )");
     std::smatch m_token;
 
     if (std::regex_search(in, m_token, r_token)) {
@@ -173,9 +173,9 @@ LexOut lex_bool(std::string &in) {
         lex_item->item = m_token[0];
         str_shift(in, lex_item->item.length());
 
-        if (lex_item->item == "true" || lex_item->item == "on") 
+        if (lex_item->item == "true " || lex_item->item == "on " || lex_item->item == "true;" || lex_item->item == "on;") 
             lex_item->mtype = MinorType::BOOL_TRUE;
-        if (lex_item->item == "false" || lex_item->item == "off") 
+        if (lex_item->item == "false " || lex_item->item == "off " || lex_item->item == "false;" || lex_item->item == "off;") 
             lex_item->mtype = MinorType::BOOL_FALSE;
 
         return LexOut (true, lex_item);
