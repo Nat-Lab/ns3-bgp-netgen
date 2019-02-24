@@ -87,14 +87,17 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address |passive)");
+    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address |passive |passive;)");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
         auto lex_item = new LexicalItem;
         lex_item->type = Type::KEYWORD;
         lex_item->item = m_kw[0];
-        str_shift(in, lex_item->item.length());
+
+        if (lex_item->item == "passive;")
+            str_shift(in, lex_item->item.length() - 1); // dirty
+        else str_shift(in, lex_item->item.length());
 
         if (lex_item->item == "network ") lex_item->mtype = MinorType::KW_NETWORK;
         if (lex_item->item == "prefix ") lex_item->mtype = MinorType::KW_PREFIX;
@@ -116,7 +119,7 @@ LexOut lex_keyword(std::string &in) {
         if (lex_item->item == "via ") lex_item->mtype = MinorType::KW_VIA;
         if (lex_item->item == "options ") lex_item->mtype = MinorType::KW_OPTIONS;
         if (lex_item->item == "log ") lex_item->mtype = MinorType::KW_LOG;
-        if (lex_item->item == "passive") lex_item->mtype = MinorType::KW_PASSIVE;
+        if (lex_item->item == "passive " || lex_item->item == "passive;") lex_item->mtype = MinorType::KW_PASSIVE;
 
         return LexOut (true, lex_item);
 
@@ -171,7 +174,9 @@ LexOut lex_bool(std::string &in) {
         auto lex_item = new LexicalItem;
         lex_item->type = Type::BOOL;
         lex_item->item = m_token[0];
-        str_shift(in, lex_item->item.length());
+        if (lex_item->item == "on;" || lex_item->item == "off;" || lex_item->item == "true;" || lex_item->item == "false;") 
+            str_shift(in, lex_item->item.length() - 1); // dirty
+        else str_shift(in, lex_item->item.length());
 
         if (lex_item->item == "true " || lex_item->item == "on " || lex_item->item == "true;" || lex_item->item == "on;") 
             lex_item->mtype = MinorType::BOOL_TRUE;
