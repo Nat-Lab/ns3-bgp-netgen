@@ -6,6 +6,7 @@ ParOut par_network (const LexicalItems &in, uint32_t offset, SimulationConfigurt
     if (cur.mtype != MinorType::VAR_NAME) return ParOut (false, offset);
 
     Network nw;
+    nw.tap = false; // default
     nw.name = cur.item;
 
     cur = in[++offset];
