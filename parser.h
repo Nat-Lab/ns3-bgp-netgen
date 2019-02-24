@@ -30,6 +30,7 @@ typedef struct Peer {
     std::string address;
     uint32_t asn;
     std::string device;
+    bool passive;
 } Peer;
 typedef std::vector<Peer> Peers;
 

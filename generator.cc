@@ -18,9 +18,9 @@ void generate_header() {
 using namespace ns3;
 int main () {
     InternetStackHelper _inet;
-    LogComponentEnable("BGPSpeaker", LOG_LEVEL_ALL);
     GlobalValue::Bind("SimulatorImplementationType", StringValue("ns3::RealtimeSimulatorImpl"));
-    GlobalValue::Bind("ChecksumEnabled", BooleanValue (true));).";
+    GlobalValue::Bind("ChecksumEnabled", BooleanValue (true));
+).";
 }
 
 void generate_footer() {

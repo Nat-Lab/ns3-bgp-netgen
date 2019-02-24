@@ -146,6 +146,7 @@ ParOut par_peers (const LexicalItems &in, uint32_t offset, Peers &out) {
         if (cur.mtype != MinorType::VAR_ADDR) return ParOut (false, offset);
         Peer p;
         p.address = cur.item;
+        p.passive = false;
 
         cur = in[++offset];
         if (cur.mtype != MinorType::KW_AS) return ParOut (false, offset);
@@ -160,6 +161,13 @@ ParOut par_peers (const LexicalItems &in, uint32_t offset, Peers &out) {
         cur = in[++offset];
         if (cur.mtype != MinorType::VAR_NAME) return ParOut (false, offset);
         p.device = cur.item;
+
+        cur = in[++offset];
+        if (cur.mtype == MinorType::KW_PASSIVE) p.passive = true;
+        if (cur.mtype == MinorType::TKN_SEMICOL) {
+            out.push_back(p);
+            continue;
+        }
 
         cur = in[++offset];
         if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
