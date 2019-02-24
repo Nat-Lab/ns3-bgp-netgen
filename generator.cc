@@ -5,16 +5,11 @@
 void generate_header() {
     std::cout << R".(#include "ns3/core-module.h"
 #include "ns3/csma-module.h"
-#include "ns3/applications-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/bgp-speaker.h"
-#include "ns3/bgp-peer.h"
-#include "ns3/bgp-route.h"
 #include "ns3/bgp-helper.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/tap-bridge-module.h"
 #include "ns3/drop-tail-queue.h"
-#include "ns3/packet.h"
 using namespace ns3;
 int main () {
     InternetStackHelper _inet;
@@ -34,16 +29,14 @@ void generate_device_setup(std::string ch, std::string node, std::string dev_nam
     printf("    Ptr<CsmaNetDevice> %s = CreateObject<CsmaNetDevice> ();\n", dev_name.c_str());
     printf("    %s->SetAddress (Mac48Address::Allocate ());\n", dev_name.c_str());
     printf("    %s->AddDevice(%s);\n", node.c_str(), dev_name.c_str());
-    printf("    %s->AddDevice(%s);\n", node.c_str(), dev_name.c_str());
     printf("    Ptr<Queue<Packet>> _queue_%s = CreateObject<DropTailQueue<Packet>> ();\n", dev_name.c_str());
     printf("    %s->SetQueue (_queue_%s);\n", dev_name.c_str(), dev_name.c_str());
     printf("    %s->Attach (%s);\n", dev_name.c_str(), ch.c_str());
-    printf("    Ptr<Ipv4> _ipv4_%s = %s->GetObject<Ipv4> ();\n", dev_name.c_str(), node.c_str());
-    printf("    int32_t %s_id = _ipv4_%s->AddInterface(%s);\n", dev_name.c_str(), dev_name.c_str(), dev_name.c_str());
+    printf("    int32_t %s_id = _ipv4_%s->AddInterface(%s);\n", dev_name.c_str(), node.c_str(), dev_name.c_str());
     printf("    Ipv4InterfaceAddress _addr_%s = Ipv4InterfaceAddress (Ipv4Address (\"%s\"), Ipv4Mask (\"%s\"));\n", dev_name.c_str(), addr.c_str(), mask.c_str());
-    printf("    _ipv4_%s->AddAddress(%s_id, _addr_%s);\n", dev_name.c_str(), dev_name.c_str(), dev_name.c_str());
-    printf("    _ipv4_%s->SetMetric(%s_id, 1);\n", dev_name.c_str(), dev_name.c_str());
-    printf("    _ipv4_%s->SetUp(%s_id);\n", dev_name.c_str(), dev_name.c_str());
+    printf("    _ipv4_%s->AddAddress(%s_id, _addr_%s);\n", node.c_str(), dev_name.c_str(), dev_name.c_str());
+    printf("    _ipv4_%s->SetMetric(%s_id, 1);\n", node.c_str(), dev_name.c_str());
+    printf("    _ipv4_%s->SetUp(%s_id);\n", node.c_str(), dev_name.c_str());
 }
 
 void generate (SimulationConfigurtion &conf) {
@@ -60,6 +53,7 @@ void generate (SimulationConfigurtion &conf) {
             std::string dev = "_dev" + node;
             printf("    Ptr<Node> %s = CreateObject<Node> ();\n", node.c_str());
             printf("    _inet.Install(NodeContainer (%s));\n", node.c_str());
+            printf("    Ptr<Ipv4> _ipv4_%s = %s->GetObject<Ipv4> ();\n", node.c_str(), node.c_str());
             generate_device_setup(ch, node, dev, net.tap_address, net.tap_address_len);
             printf("    TapBridgeHelper _tbh_%s;\n", net.name.c_str());
             printf("    _tbh_%s.SetAttribute (\"DeviceName\", StringValue(\"%s\"));\n", net.name.c_str(), net.tap_name.c_str());
@@ -72,7 +66,7 @@ void generate (SimulationConfigurtion &conf) {
         std::string router_name = "_r_" + router.name;
         printf("    Ptr<Node> %s = CreateObject<Node> ();\n", router_name.c_str());
         printf("    _inet.Install(NodeContainer (%s));\n", router_name.c_str());
-
+        printf("    Ptr<Ipv4> _ipv4_%s = %s->GetObject<Ipv4> ();\n", router_name.c_str(), router_name.c_str());
         for (auto device : router.devices) {
             std::string net_name = "_net_" + device.connect_to;
             std::string device_name = "_dev_" + router.name + "_" + device.name;
