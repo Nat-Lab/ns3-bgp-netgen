@@ -101,6 +101,7 @@ LexOut lex_keyword(std::string &in) {
         if (lex_item->item == "tap ") lex_item->mtype = MinorType::KW_TAP;
         if (lex_item->item == "tap_name ") lex_item->mtype = MinorType::KW_TAP_NAME;
         if (lex_item->item == "tap_mode ") lex_item->mtype = MinorType::KW_TAP_MODE;
+        if (lex_item->item == "tap_address ") lex_item->mtype = MinorType::KW_TAP_MODE;
         if (lex_item->item == "router ") lex_item->mtype = MinorType::KW_ROUTER;
         if (lex_item->item == "as ") lex_item->mtype = MinorType::KW_AS;
         if (lex_item->item == "dev ") lex_item->mtype = MinorType::KW_DEV;

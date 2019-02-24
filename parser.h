@@ -13,6 +13,8 @@ typedef struct Network {
     bool tap;
     std::string tap_name;
     std::string tap_mode;
+    std::string tap_address;
+    std::string tap_address_len;
 } Network;
 typedef std::vector<Network> Networks;
 

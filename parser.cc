@@ -66,6 +66,21 @@ ParOut par_network (const LexicalItems &in, uint32_t offset, SimulationConfigurt
                 cur = in[++offset];
                 parsed = true;
                 continue;
+            case MinorType::KW_TAP_ADDRESS:
+                 cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_ADDR) return ParOut (false, offset);
+                nw.tap_address = cur.item;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_PREFIX_LEN) return ParOut (false, offset);
+                nw.tap_address_len = cur.item;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                parsed = true;
+                continue;
             default: parsed = false;
         }
     } while (parsed);
