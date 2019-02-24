@@ -87,7 +87,7 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log )");
+    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address )");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
@@ -101,7 +101,7 @@ LexOut lex_keyword(std::string &in) {
         if (lex_item->item == "tap ") lex_item->mtype = MinorType::KW_TAP;
         if (lex_item->item == "tap_name ") lex_item->mtype = MinorType::KW_TAP_NAME;
         if (lex_item->item == "tap_mode ") lex_item->mtype = MinorType::KW_TAP_MODE;
-        if (lex_item->item == "tap_address ") lex_item->mtype = MinorType::KW_TAP_MODE;
+        if (lex_item->item == "tap_address ") lex_item->mtype = MinorType::KW_TAP_ADDRESS;
         if (lex_item->item == "router ") lex_item->mtype = MinorType::KW_ROUTER;
         if (lex_item->item == "as ") lex_item->mtype = MinorType::KW_AS;
         if (lex_item->item == "dev ") lex_item->mtype = MinorType::KW_DEV;
