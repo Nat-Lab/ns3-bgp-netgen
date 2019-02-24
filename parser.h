@@ -39,6 +39,7 @@ typedef struct Route {
     std::string len;
     std::string nexthop;
     std::string device;
+    bool local;
 } Route;
 typedef std::vector<Route> Routes;
 

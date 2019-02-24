@@ -89,7 +89,7 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address |passive |passive;)");
+    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address |passive |passive;|local |local;)");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
@@ -97,7 +97,7 @@ LexOut lex_keyword(std::string &in) {
         lex_item->type = Type::KEYWORD;
         lex_item->item = m_kw[0];
 
-        if (lex_item->item == "passive;")
+        if (lex_item->item == "passive;" || lex_item->item == "local;")
             str_shift(in, lex_item->item.length() - 1); // dirty
         else str_shift(in, lex_item->item.length());
 
@@ -122,6 +122,7 @@ LexOut lex_keyword(std::string &in) {
         if (lex_item->item == "options ") lex_item->mtype = MinorType::KW_OPTIONS;
         if (lex_item->item == "log ") lex_item->mtype = MinorType::KW_LOG;
         if (lex_item->item == "passive " || lex_item->item == "passive;") lex_item->mtype = MinorType::KW_PASSIVE;
+        if (lex_item->item == "local " || lex_item->item == "local;") lex_item->mtype = MinorType::KW_LOCAL;
 
         return LexOut (true, lex_item);
 

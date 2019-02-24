@@ -193,6 +193,7 @@ ParOut par_routes (const LexicalItems &in, uint32_t offset, Routes &out) {
         if (cur.mtype != MinorType::VAR_ADDR) return ParOut (false, offset);
         Route r;
         r.prefix = cur.item;
+        r.local = false;
 
         cur = in[++offset];
         if (cur.mtype != MinorType::VAR_PREFIX_LEN) return ParOut (false, offset);
@@ -211,6 +212,13 @@ ParOut par_routes (const LexicalItems &in, uint32_t offset, Routes &out) {
         cur = in[++offset];
         if (cur.mtype != MinorType::VAR_NAME) return ParOut (false, offset);
         r.device = cur.item;
+
+        cur = in[++offset];
+        if (cur.mtype == MinorType::KW_LOCAL) r.local = true;
+        if (cur.mtype == MinorType::TKN_SEMICOL) {
+            out.push_back(r);
+            continue;
+        }
 
         cur = in[++offset];
         if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);

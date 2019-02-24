@@ -78,8 +78,6 @@ void generate (SimulationConfigurtion &conf) {
         std::string bgp_app_name = "_bgp_" + router.name;
         printf("    BGPHelper %s (%d);\n", bgp_app_name.c_str(), router.asn);
 
-        
-
         for (auto peer : router.peers) {
             std::string dev_id_var = "_dev_" + router.name + "_" + peer.device + "_id";
             if (peer.passive) printf("    %s.AddPeer(Ipv4Address(\"%s\"), %d, %s, true);\n", bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
@@ -88,7 +86,8 @@ void generate (SimulationConfigurtion &conf) {
             
         for (auto route : router.routes) {
             std::string dev_id_var = route.device == "lo" ? "0" : "_dev_" + router.name + "_" + route.device + "_id";
-            printf("    %s.AddRoute(Ipv4Address(\"%s\"), %s, Ipv4Address(\"%s\"), %s);\n", bgp_app_name.c_str(), route.prefix.c_str(), route.len.substr(1, route.len.size() - 1).c_str(), route.nexthop.c_str(), dev_id_var.c_str());
+            if (route.local)printf("    %s.AddRoute(Ipv4Address(\"%s\"), %s, Ipv4Address(\"%s\"), %s, true);\n", bgp_app_name.c_str(), route.prefix.c_str(), route.len.substr(1, route.len.size() - 1).c_str(), route.nexthop.c_str(), dev_id_var.c_str());
+            else printf("    %s.AddRoute(Ipv4Address(\"%s\"), %s, Ipv4Address(\"%s\"), %s);\n", bgp_app_name.c_str(), route.prefix.c_str(), route.len.substr(1, route.len.size() - 1).c_str(), route.nexthop.c_str(), dev_id_var.c_str());
         }
 
         printf("    %s.Install (%s);\n", bgp_app_name.c_str(), router_name.c_str());

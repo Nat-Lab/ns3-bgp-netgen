@@ -44,6 +44,7 @@ typedef enum MinorType {
     KW_CONNECT,
     KW_ADDRESS,
     KW_VIA,
+    KW_LOCAL,
     KW_OPTIONS,
     KW_LOG,
     BOOL_TRUE,
