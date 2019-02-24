@@ -15,47 +15,47 @@ Here is an example of a config file. It defines a network with two routes and th
 
 ```
 options {
-	log BGPSpeaker;
+    log BGPSpeaker;
 }
 
 network home_network {
-	prefix 10.254.0.0/24;
+    prefix 10.254.0.0/24;
 }
 
 network peering_network {
-	prefix 10.254.1.0/24;
+    prefix 10.254.1.0/24;
 }
 
 network office_network {
-	prefix 10.254.2.0/24;
+    prefix 10.254.2.0/24;
 }
 
 router home_router {
-	as 65001;
-	devices {
-		device dev_home connect home_network address 10.254.0.1/24;
-		device dev_peer connect peering_network address 10.254.1.1/24;
-	}
-	peers {
-		peer 10.254.1.2 as 65002 dev dev_peer;
-	}
-	routes {
-		route 10.254.0.0/24 via 127.0.0.1 dev lo; # route to self
-	}
+    as 65001;
+    devices {
+        device dev_home connect home_network address 10.254.0.1/24;
+        device dev_peer connect peering_network address 10.254.1.1/24;
+    }
+    peers {
+        peer 10.254.1.2 as 65002 dev dev_peer;
+    }
+    routes {
+        route 10.254.0.0/24 via 127.0.0.1 dev lo; # route to self
+    }
 }
 
 router office_router {
-	as 65002;
-	devices {
-		device dev_office connect office_network address 10.254.2.1/24;
-		device dev_peer connect peering_network address 10.254.1.2/24;
-	}
-	peers {
-		peer 10.254.1.1 as 65001 dev dev_peer;
-	}
-	routes {
-		route 10.254.2.0/24 via 127.0.0.1 dev lo; # route to self
-	}
+    as 65002;
+    devices {
+        device dev_office connect office_network address 10.254.2.1/24;
+        device dev_peer connect peering_network address 10.254.1.2/24;
+    }
+    peers {
+        peer 10.254.1.1 as 65001 dev dev_peer;
+    }
+    routes {
+        route 10.254.2.0/24 via 127.0.0.1 dev lo; # route to self
+    }
 }
 ```
 
@@ -91,11 +91,11 @@ For example:
 
 ```
 network net0 {
-	prefix 10.254.0.0/24;
-	tap on;
-	tap_name tap-ns3-in;
-	tap_mode ConfigureLocal;
-	tap_address 10.254.0.1/24;
+    prefix 10.254.0.0/24;
+    tap on;
+    tap_name tap-ns3-in;
+    tap_mode ConfigureLocal;
+    tap_address 10.254.0.1/24;
 }
 ```
 
@@ -124,7 +124,7 @@ Where `device_name` is the name of the device, you'll need this when specifying 
 
 ```
 devices {
-	device dev_office connect office_network address 10.254.2.1/24;
+    device dev_office connect office_network address 10.254.2.1/24;
 }
 ```
 
@@ -144,7 +144,7 @@ For example:
 
 ```
 peers {
-	peer 10.254.2.1 as 65001 dev dev_1 passive;
+    peer 10.254.2.1 as 65001 dev dev_1 passive;
 }
 ```
 Will create a passive BGP session with AS65001.
@@ -154,19 +154,27 @@ Will create a passive BGP session with AS65001.
 A routes block define routes that are initially in a BGP router's NLRI (Network Layer Reachability Information). It must be used inside the `router {}` block. It has only one option, `route`, which define a route. `route` option has the following syntax:
 
 ```
-route <network_prefix>/<prefix_length> via <nexthop_address> dev <device_name>;
+route <network_prefix>/<prefix_length> via <nexthop_address> dev <device_name> [local];
 ```
 
-Where `network_prefix/prefix_length` identifies the network, `nexthop_address` specify the network, and `device_name` define the device that nexthop is on.
+Where `network_prefix/prefix_length` identifies the network, `nexthop_address` specify the network, and `device_name` define the device that nexthop is on. Optionally, you can set the route as local with `local`. This will instruct `BGPSpeaker` not to send this route to its peer.
 
 For example:
 
 ```
 routes {
-	route 0.0.0.0/0 via 10.254.0.1 dev dev_internet;
+    route 0.0.0.0/0 via 10.254.0.1 dev dev_internet local;
+    route 10.254.0.0/16 via 10.254.0.254 dev dev_internet;
 }
 ```
-Will do ns3 equivalent of iproute2 `ip rou add 0.0.0.0/0 via 10.254.0.1 dev dev_internet`.
+Will do ns3 equivalent of iproute2 commands:
+
+```
+ip rou add 0.0.0.0/0 via 10.254.0.1 dev dev_internet
+ip rou add 10.254.0.0/16 via 10.254.0.254 dev dev_internet
+```
+
+And the route 0.0.0.0/0 will be local (so it won't be sent to BGP peers).
 
 ### Licenses
 
