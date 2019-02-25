@@ -4,6 +4,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "generator.h"
+#include "preprocessor.h"
 
 int main (int argc, char **argv) {
     if (argc <= 1) {
@@ -13,6 +14,9 @@ int main (int argc, char **argv) {
 
     std::ifstream conf (argv[1]);
     std::string in ((std::istreambuf_iterator<char> (conf)), std::istreambuf_iterator<char>());
+
+    preprocessor_apply(in);
+
     LexicalItems lex_out;
     auto lex_ret = lexer(in, lex_out);
 
