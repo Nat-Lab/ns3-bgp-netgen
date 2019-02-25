@@ -59,6 +59,12 @@ router office_router {
 }
 ```
 
+### Preprocessor Directives
+
+There is preprocessor in ns3-netgen, and preprocessor directives start with the `@` sign. 
+
+Currently, only one directive is available: `@include <filename>`. This directive allows you to include another ns3-netgen configuration file. Any line with  `@include <filename>` will be replaced with the content of the file specify in the `filename` parameter during preprocessing.
+
 ### Blocks
 
 In the root of the configuration document, three variables can be set. `options` for options, `network` for defining a network, and `router` for defining a router. 
