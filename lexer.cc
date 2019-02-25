@@ -89,40 +89,37 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network |prefix |tap(_(name|mode))? |router |as |dev(ices?)? |peers? |routes? |connect |address |via |options |log |tap_address |passive |passive;|local |local;)");
+    std::regex r_kw ("^(network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local)( |;|\\{)");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
         auto lex_item = new LexicalItem;
         lex_item->type = Type::KEYWORD;
-        lex_item->item = m_kw[0];
+        lex_item->item = m_kw[1];
+        str_shift(in, lex_item->item.length());
 
-        if (lex_item->item == "passive;" || lex_item->item == "local;")
-            str_shift(in, lex_item->item.length() - 1); // dirty
-        else str_shift(in, lex_item->item.length());
-
-        if (lex_item->item == "network ") lex_item->mtype = MinorType::KW_NETWORK;
-        if (lex_item->item == "prefix ") lex_item->mtype = MinorType::KW_PREFIX;
-        if (lex_item->item == "tap ") lex_item->mtype = MinorType::KW_TAP;
-        if (lex_item->item == "tap_name ") lex_item->mtype = MinorType::KW_TAP_NAME;
-        if (lex_item->item == "tap_mode ") lex_item->mtype = MinorType::KW_TAP_MODE;
-        if (lex_item->item == "tap_address ") lex_item->mtype = MinorType::KW_TAP_ADDRESS;
-        if (lex_item->item == "router ") lex_item->mtype = MinorType::KW_ROUTER;
-        if (lex_item->item == "as ") lex_item->mtype = MinorType::KW_AS;
-        if (lex_item->item == "dev ") lex_item->mtype = MinorType::KW_DEV;
-        if (lex_item->item == "device ") lex_item->mtype = MinorType::KW_DEVICE;
-        if (lex_item->item == "devices ") lex_item->mtype = MinorType::KW_DEVICES;
-        if (lex_item->item == "peer ") lex_item->mtype = MinorType::KW_PEER;
-        if (lex_item->item == "peers ") lex_item->mtype = MinorType::KW_PEERS;
-        if (lex_item->item == "route ") lex_item->mtype = MinorType::KW_ROUTE;
-        if (lex_item->item == "routes ") lex_item->mtype = MinorType::KW_ROUTES;
-        if (lex_item->item == "connect ") lex_item->mtype = MinorType::KW_CONNECT;
-        if (lex_item->item == "address ") lex_item->mtype = MinorType::KW_ADDRESS;
-        if (lex_item->item == "via ") lex_item->mtype = MinorType::KW_VIA;
-        if (lex_item->item == "options ") lex_item->mtype = MinorType::KW_OPTIONS;
-        if (lex_item->item == "log ") lex_item->mtype = MinorType::KW_LOG;
-        if (lex_item->item == "passive " || lex_item->item == "passive;") lex_item->mtype = MinorType::KW_PASSIVE;
-        if (lex_item->item == "local " || lex_item->item == "local;") lex_item->mtype = MinorType::KW_LOCAL;
+        if (lex_item->item == "network") lex_item->mtype = MinorType::KW_NETWORK;
+        if (lex_item->item == "prefix") lex_item->mtype = MinorType::KW_PREFIX;
+        if (lex_item->item == "tap") lex_item->mtype = MinorType::KW_TAP;
+        if (lex_item->item == "tap_name") lex_item->mtype = MinorType::KW_TAP_NAME;
+        if (lex_item->item == "tap_mode") lex_item->mtype = MinorType::KW_TAP_MODE;
+        if (lex_item->item == "tap_address") lex_item->mtype = MinorType::KW_TAP_ADDRESS;
+        if (lex_item->item == "router") lex_item->mtype = MinorType::KW_ROUTER;
+        if (lex_item->item == "as") lex_item->mtype = MinorType::KW_AS;
+        if (lex_item->item == "dev") lex_item->mtype = MinorType::KW_DEV;
+        if (lex_item->item == "device") lex_item->mtype = MinorType::KW_DEVICE;
+        if (lex_item->item == "devices") lex_item->mtype = MinorType::KW_DEVICES;
+        if (lex_item->item == "peer") lex_item->mtype = MinorType::KW_PEER;
+        if (lex_item->item == "peers") lex_item->mtype = MinorType::KW_PEERS;
+        if (lex_item->item == "route") lex_item->mtype = MinorType::KW_ROUTE;
+        if (lex_item->item == "routes") lex_item->mtype = MinorType::KW_ROUTES;
+        if (lex_item->item == "connect") lex_item->mtype = MinorType::KW_CONNECT;
+        if (lex_item->item == "address") lex_item->mtype = MinorType::KW_ADDRESS;
+        if (lex_item->item == "via") lex_item->mtype = MinorType::KW_VIA;
+        if (lex_item->item == "options") lex_item->mtype = MinorType::KW_OPTIONS;
+        if (lex_item->item == "log") lex_item->mtype = MinorType::KW_LOG;
+        if (lex_item->item == "passive") lex_item->mtype = MinorType::KW_PASSIVE;
+        if (lex_item->item == "local") lex_item->mtype = MinorType::KW_LOCAL;
 
         return LexOut (true, lex_item);
 
@@ -170,20 +167,18 @@ LexOut lex_token(std::string &in) {
 }
 
 LexOut lex_bool(std::string &in) {
-    std::regex r_token ("^(on;|off;|true;|false;|on |off |true |false )");
+    std::regex r_token ("^(on|off|true|false)( |;)");
     std::smatch m_token;
 
     if (std::regex_search(in, m_token, r_token)) {
         auto lex_item = new LexicalItem;
         lex_item->type = Type::BOOL;
-        lex_item->item = m_token[0];
-        if (lex_item->item == "on;" || lex_item->item == "off;" || lex_item->item == "true;" || lex_item->item == "false;") 
-            str_shift(in, lex_item->item.length() - 1); // dirty
-        else str_shift(in, lex_item->item.length());
+        lex_item->item = m_token[1];
+        str_shift(in, lex_item->item.length());
 
-        if (lex_item->item == "true " || lex_item->item == "on " || lex_item->item == "true;" || lex_item->item == "on;") 
+        if (lex_item->item == "true" || lex_item->item == "on") 
             lex_item->mtype = MinorType::BOOL_TRUE;
-        if (lex_item->item == "false " || lex_item->item == "off " || lex_item->item == "false;" || lex_item->item == "off;") 
+        if (lex_item->item == "false" || lex_item->item == "off") 
             lex_item->mtype = MinorType::BOOL_FALSE;
 
         return LexOut (true, lex_item);
