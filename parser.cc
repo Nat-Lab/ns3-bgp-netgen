@@ -68,7 +68,7 @@ ParOut par_network (const LexicalItems &in, uint32_t offset, SimulationConfigurt
                 parsed = true;
                 continue;
             case MinorType::KW_TAP_ADDRESS:
-                 cur = in[++offset];
+                cur = in[++offset];
                 if (cur.mtype != MinorType::VAR_ADDR) return ParOut (false, offset);
                 nw.tap_address = cur.item;
 
@@ -134,6 +134,60 @@ ParOut par_devices (const LexicalItems &in, uint32_t offset, Devices &out) {
     return ParOut (true, offset);
 }
 
+ParOut par_filter (const LexicalItems &in, uint32_t offset, Filters &out) {
+    auto cur = in[offset];
+
+    if (cur.mtype != MinorType::TKN_LBRACE) return ParOut (false, offset);
+
+    cur = in[++offset];
+    if (cur.type != Type::KEYWORD) return ParOut (false, offset);
+
+    bool parsed = false;
+    do {
+        cur = in[offset];
+        switch(cur.mtype) {
+            case MinorType::KW_DEFAULT_ACTION:
+                cur = in[++offset];
+                if (cur.mtype != MinorType::KW_ACCEPT && cur.mtype != MinorType::KW_REJECT)
+                    return ParOut (false, offset);
+                out.filter_defualt_accept = cur.mtype == MinorType::KW_ACCEPT;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                parsed = true;
+                continue;
+            case MinorType::KW_ACCEPT:
+            case MinorType::KW_REJECT: {
+                Filter f;
+                f.is_accept = cur.mtype == MinorType::KW_ACCEPT;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_ADDR) return ParOut (false, offset);
+                f.prefix = cur.item;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_PREFIX_LEN) return ParOut (false, offset);
+                f.len = cur.item;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                out.filters.push_back(f);
+                parsed = true;
+                continue;
+            }
+            default: parsed = false;
+        }
+    } while (parsed);
+
+    if (cur.mtype != MinorType::TKN_RBRACE) return ParOut (false, offset);
+    offset++;
+    return ParOut (true, offset);
+}
+
 ParOut par_peers (const LexicalItems &in, uint32_t offset, Peers &out) {
     auto cur = in[offset];
     if (cur.mtype != MinorType::TKN_LBRACE) return ParOut (false, offset);
@@ -147,6 +201,8 @@ ParOut par_peers (const LexicalItems &in, uint32_t offset, Peers &out) {
         Peer p;
         p.address = cur.item;
         p.passive = false;
+        p.in_filter.filter_defualt_accept = true;
+        p.out_filter.filter_defualt_accept = true;
 
         cur = in[++offset];
         if (cur.mtype != MinorType::KW_AS) return ParOut (false, offset);
@@ -163,7 +219,45 @@ ParOut par_peers (const LexicalItems &in, uint32_t offset, Peers &out) {
         p.device = cur.item;
 
         cur = in[++offset];
-        if (cur.mtype == MinorType::KW_PASSIVE) p.passive = true;
+
+        if (cur.mtype == MinorType::KW_PASSIVE) {
+            p.passive = true;
+            cur = in[++offset];
+        }
+
+        if (cur.mtype == MinorType::TKN_LBRACE) {
+            cur = in[++offset];
+            if (cur.type != Type::KEYWORD) return ParOut (false, offset);
+
+            bool parsed = false;
+            do {
+                cur = in[offset];
+                parsed = false;
+                switch (cur.mtype) {
+                    case MinorType::KW_IN_FILTER: {
+                        Filters f;
+                        auto ret = par_filter(in, offset + 1, f);
+                        offset = std::get<1> (ret);
+                        if (!(std::get<0> (ret))) return ret;
+                        p.in_filter = f;
+                        parsed = true;
+                        continue;
+                    }
+                    case MinorType::KW_OUT_FILTER: {
+                        Filters f;
+                        auto ret = par_filter(in, offset + 1, f);
+                        offset = std::get<1> (ret);
+                        if (!(std::get<0> (ret))) return ret;
+                        p.out_filter = f;
+                        parsed = true;
+                        continue;
+                    }
+                    default: parsed = false;
+                }
+            } while(parsed);
+
+        }
+
         if (cur.mtype == MinorType::TKN_SEMICOL) {
             out.push_back(p);
             continue;

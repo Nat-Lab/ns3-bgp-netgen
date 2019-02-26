@@ -89,7 +89,7 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local)( |;|\\{)");
+    std::regex r_kw ("^(network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local|(in|out)_filter|default_action|accept|reject)( |;|\\{)");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
@@ -120,6 +120,11 @@ LexOut lex_keyword(std::string &in) {
         if (lex_item->item == "log") lex_item->mtype = MinorType::KW_LOG;
         if (lex_item->item == "passive") lex_item->mtype = MinorType::KW_PASSIVE;
         if (lex_item->item == "local") lex_item->mtype = MinorType::KW_LOCAL;
+        if (lex_item->item == "accept") lex_item->mtype = MinorType::KW_ACCEPT;
+        if (lex_item->item == "reject") lex_item->mtype = MinorType::KW_REJECT;
+        if (lex_item->item == "in_filter") lex_item->mtype = MinorType::KW_IN_FILTER;
+        if (lex_item->item == "out_filter") lex_item->mtype = MinorType::KW_OUT_FILTER;
+        if (lex_item->item == "default_action") lex_item->mtype = MinorType::KW_DEFAULT_ACTION;
 
         return LexOut (true, lex_item);
 

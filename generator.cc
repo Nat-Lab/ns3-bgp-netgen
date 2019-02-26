@@ -80,8 +80,28 @@ void generate (SimulationConfigurtion &conf) {
 
         for (auto peer : router.peers) {
             std::string dev_id_var = "_dev_" + router.name + "_" + peer.device + "_id";
-            if (peer.passive) printf("    %s.AddPeer(Ipv4Address(\"%s\"), %d, %s, true);\n", bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
-            else printf("    %s.AddPeer(Ipv4Address(\"%s\"), %d, %s);\n", bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
+            std::string filter_var = "_filter_" + router.name + peer.address;
+            std::replace(filter_var.begin(), filter_var.end(), '.', '_');
+            if (peer.passive) printf("    auto %s = %s.AddPeer(Ipv4Address(\"%s\"), %d, %s, true);\n", filter_var.c_str(), bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
+            else printf("    auto %s = %s.AddPeer(Ipv4Address(\"%s\"), %d, %s);\n", filter_var.c_str(), bgp_app_name.c_str(), peer.address.c_str(), peer.asn, dev_id_var.c_str());
+
+            if (peer.in_filter.filter_defualt_accept)
+                printf("    %s.in_filter->default_op = BGPFilterOP::ACCEPT;\n", filter_var.c_str());
+            else printf("    %s.in_filter->default_op = BGPFilterOP::REJECT;\n", filter_var.c_str());
+            for (auto filter : peer.in_filter.filters) {
+                if (filter.is_accept)
+                    printf("    %s.in_filter->append (BGPFilterOP::ACCEPT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
+                else printf("    %s.in_filter->append (BGPFilterOP::REJECT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
+            }
+
+            if (peer.out_filter.filter_defualt_accept)
+                printf("    %s.out_filter->default_op = BGPFilterOP::ACCEPT;\n", filter_var.c_str());
+            else printf("    %s.out_filter->default_op = BGPFilterOP::REJECT;\n", filter_var.c_str());
+            for (auto filter : peer.out_filter.filters) {
+                if (filter.is_accept)
+                    printf("    %s.out_filter->append (BGPFilterOP::ACCEPT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
+                else printf("    %s.out_filter->append (BGPFilterOP::REJECT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
+            }
         }
             
         for (auto route : router.routes) {

@@ -26,11 +26,25 @@ typedef struct Device {
 } Device;
 typedef std::vector<Device> Devices;
 
+typedef struct Filter {
+    bool is_accept;
+    std::string prefix;
+    std::string len;
+} Filter;
+
+typedef struct Filters {
+    std::vector<Filter> filters;
+    bool filter_defualt_accept;
+} Filters;
+
 typedef struct Peer {
     std::string address;
     uint32_t asn;
     std::string device;
     bool passive;
+   
+    Filters in_filter;
+    Filters out_filter;
 } Peer;
 typedef std::vector<Peer> Peers;
 
@@ -76,6 +90,9 @@ ParOut par_options(const LexicalItems &in, uint32_t offset, SimulationConfigurti
 ParOut par_devices (const LexicalItems &in, uint32_t offset, Devices &out);
 ParOut par_peers (const LexicalItems &in, uint32_t offset, Peers &out);
 ParOut par_routes (const LexicalItems &in, uint32_t offset, Routes &out);
+
+/* peer block member */
+ParOut par_filter (const LexicalItems &in, uint32_t offset, Filters &out);
 
 ParOut parse(const LexicalItems &in, SimulationConfigurtion &out);
 

@@ -47,6 +47,11 @@ typedef enum MinorType {
     KW_LOCAL,
     KW_OPTIONS,
     KW_LOG,
+    KW_IN_FILTER,
+    KW_OUT_FILTER,
+    KW_DEFAULT_ACTION,
+    KW_ACCEPT,
+    KW_REJECT,
     BOOL_TRUE,
     BOOL_FALSE
 } MinorType;
