@@ -141,7 +141,7 @@ Will add a network device onto the router with the name of `dev_office`, connect
 A peers block define BGP peers for a router. It must be used inside the `router {}` block. It has only one option, `peer`, which define a BGP peer. `peer` option has the following syntax:
 
 ```
-peer <peer_address> as <peer_asn> dev <device_name> [passive];
+peer <peer_address> as <peer_asn> dev <device_name> [passive] [{ ... }];
 ```
 
 Where `peer_address` is the address of the peer, `peer_asn` is ASN of the peer, and `device_name` is the name of the device that the peer is on. Optionally, you can set the peering as passive with `passive`. This will instruct `BGPSpeaker` not to initiate the peering but wait for a connection from the peer.
@@ -154,6 +154,30 @@ peers {
 }
 ```
 Will create a passive BGP session with AS65001.
+
+#### The `peer {}` block
+
+`peer` option in the peers block can also be written as an option group to define ingress/egress route filtering. There are two optional blocks, `in_filter` for ingress routes filtering and `out_filter` for egress routes filtering. For example:
+
+```
+peers {
+    peer 10.254.0.1 as 65002 dev dev_2 {
+        in_filter {
+            default_action reject;
+            accept 10.0.0.0/8;
+            reject 10.254.0.0/24;
+        }
+        out_filter {
+            reject 10.254.0.0/24;
+        }
+    };
+}
+```
+
+Will filter out any ingress routes by default and accept any subnet inside 10.0.0.0/8 (so something like 10.1.0.0/24 will be accepted), but if the route is 10.254.0.0/24 or any subnet of 10.254.0.0/24, that route will again be rejected. And if will not announce 10.254.0.0/24 or 
+subnet of 10.254.0.0/24, since that was rejected in `out_filter`.
+
+Filter rules are check by order, and the last result will be taken as the final decision. If there is no match for a subnet in filter rules, `default_action` will be taken. If no  `default_action` was set, the route will be accepted.
 
 #### The `routes {}` block
 
