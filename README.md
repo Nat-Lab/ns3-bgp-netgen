@@ -71,7 +71,16 @@ In the root of the configuration document, three variables can be set. `options`
 
 #### The `options {}` block
 
-The options block allows you to specify options for simulation. Currently, only `log` is supported. `log` will enable logging for the given ns3 component. For example:
+A options block sets simulation options. It has the following options:
+
+option | required? | description | example
+---|---|---|---
+log | no | set `LOG_LEVEL_ALL` for a component | `log BGPSpeaker;`
+monitor | no | enable `BGPMonitor`. | `monitor on;`
+monitor\_trigger | if `monitor on;`| Monitor trigger | `monitor_trigger /var/run/bgpmon_in;`
+monitor\_output | if `monitor on;` | Monitor output | `monitor_output /var/run/bgpmon_out;`
+
+For example:
 
 ```
 options {
@@ -87,11 +96,11 @@ A network block defines a network. It has the following options:
 
 option | required? | description | example
 ---|---|---|---
-prefix | yes | The network prefix of this netowrk | `prefix 10.254.0.0/24;`
-tap | no | Enable `TapBridge` on this network. | `tap on;`
-tap\_name | if `tap on;`| The name of TAP interface. | `tap_name tap-ns3-in;`
-tap\_mode | if `tap on;` | Mode of `TapBridge`. See [here](https://www.nsnam.org/docs/release/3.29/models/html/tap.html). | `tap_mode UseBridge;`
-tap\_address | if `tap on;` | Address on TAP interface. | `tap_address 10.254.0.1/24;`
+prefix | yes | the network prefix of this netowrk | `prefix 10.254.0.0/24;`
+tap | no | enable `TapBridge` on this network. | `tap on;`
+tap\_name | if `tap on;`| the name of TAP interface. | `tap_name tap-ns3-in;`
+tap\_mode | if `tap on;` | mode of `TapBridge`. See [here](https://www.nsnam.org/docs/release/3.29/models/html/tap.html). | `tap_mode UseBridge;`
+tap\_address | if `tap on;` | address on TAP interface. | `tap_address 10.254.0.1/24;`
 
 For example:
 
@@ -114,9 +123,9 @@ A router block defines a router. It has the following options:
 option | required? | description | example
 ---|---|---|---
 as | no | BGP ASN of this router | `as 65001;`
-devices | no | List of devices. | n/a
-peers | no | List of BGP peers. | n/a
-routes | no | List of routes to insert to BGP NLRI. | n/a
+devices | no | list of devices. | n/a
+peers | no | list of BGP peers. | n/a
+routes | no | list of routes to insert to BGP NLRI. | n/a
 
 #### The `devices {}` block
 
