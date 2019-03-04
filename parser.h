@@ -66,10 +66,12 @@ typedef struct Router {
 } Router;
 typedef std::vector<Router> Routers;
 
-typedef struct Option {
-    std::string log;
-} Option;
-typedef std::vector<Option> Options;
+typedef struct Options {
+    std::vector<std::string> log;
+    bool monitor;
+    std::string monitor_trigger;
+    std::string monitor_output;
+} Options;
 
 typedef struct SimulationConfigurtion {
     Networks networks;

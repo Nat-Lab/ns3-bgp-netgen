@@ -394,20 +394,60 @@ ParOut par_options(const LexicalItems &in, uint32_t offset, SimulationConfigurti
     auto cur = in[offset];
     if (cur.mtype != MinorType::TKN_LBRACE) return ParOut (false, offset);
 
-    while (true) {
-        cur = in[++offset];
-        if (cur.mtype != MinorType::KW_LOG) break;
+    cur = in[++offset];
+    if (cur.type != Type::KEYWORD) return ParOut (false, offset);
 
-        cur = in[++offset];
-        if (cur.mtype != MinorType::VAR_NAME) return ParOut (false, offset);
-        Option o;
-        o.log = cur.item;
+    bool parsed = false;
+    do {
+        parsed = false;
+        switch (cur.mtype) {
+            case MinorType::KW_LOG:
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_NAME) return ParOut (false, offset);
+                out.options.log.push_back(cur.item);
 
-        cur = in[++offset];
-        if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
 
-        out.options.push_back(o);
-    }
+                cur = in[++offset];
+                parsed = true;
+                continue;
+            case MinorType::KW_MONITOR: 
+                cur = in[++offset];
+                if (cur.type != Type::BOOL) return ParOut (false, offset);
+                out.options.monitor = (cur.mtype == MinorType::BOOL_TRUE) ? true : false;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                parsed = true;
+                continue;
+            case MinorType::KW_MONITOR_TRIGGER: 
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_PATH) return ParOut (false, offset);
+                out.options.monitor_trigger = cur.item;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                parsed = true;
+                continue;
+            case MinorType::KW_MONITOR_OUTPUT: 
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_PATH) return ParOut (false, offset);
+                out.options.monitor_output = cur.item;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                parsed = true;
+                continue;
+            default: parsed = false;
+        }
+    } while (parsed);
 
     if (cur.mtype != MinorType::TKN_RBRACE) return ParOut (false, offset);
     offset++;
@@ -415,6 +455,8 @@ ParOut par_options(const LexicalItems &in, uint32_t offset, SimulationConfigurti
 }
 
 ParOut parse(const LexicalItems &in, SimulationConfigurtion &out) {
+    memset(&out, 0, sizeof(SimulationConfigurtion));
+
     uint32_t offset = 0;
     auto cur = in[offset];
     if (cur.type != Type::KEYWORD) return ParOut (false, offset);

@@ -10,6 +10,7 @@ void generate_header() {
 #include "ns3/ipv4-address.h"
 #include "ns3/tap-bridge-module.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/bgp-monitor.h"
 using namespace ns3;
 int main () {
     InternetStackHelper _inet;
@@ -40,9 +41,11 @@ void generate_device_setup(std::string ch, std::string node, std::string dev_nam
 }
 
 void generate (SimulationConfigurtion &conf) {
-    for (auto option : conf.options) {
-        printf("    LogComponentEnable(\"%s\", LOG_LEVEL_ALL);\n", option.log.c_str());
+    for (auto option : conf.options.log) {
+        printf("    LogComponentEnable(\"%s\", LOG_LEVEL_ALL);\n", option.c_str());
     }
+
+    if (conf.options.monitor) printf("    BGPMonitor _mon (\"%s\", \"%s\");\n", conf.options.monitor_trigger.c_str(), conf.options.monitor_output.c_str());
 
     for (auto net : conf.networks) {
         printf("    Ptr<CsmaChannel> _net_%s = CreateObject<CsmaChannel> ();\n", net.name.c_str());
@@ -110,8 +113,10 @@ void generate (SimulationConfigurtion &conf) {
             else printf("    %s.AddRoute(Ipv4Address(\"%s\"), %s, Ipv4Address(\"%s\"), %s);\n", bgp_app_name.c_str(), route.prefix.c_str(), route.len.substr(1, route.len.size() - 1).c_str(), route.nexthop.c_str(), dev_id_var.c_str());
         }
 
-        printf("    %s.Install (%s);\n", bgp_app_name.c_str(), router_name.c_str());
+        printf("    auto %s_appc = %s.Install (%s);\n", bgp_app_name.c_str(), bgp_app_name.c_str(), router_name.c_str());
+        if (conf.options.monitor) printf("    _mon.AddSpeaker(%s_appc.Get(0)->GetObject<BGPSpeaker> ());\n", bgp_app_name.c_str());
     }
     
+    if (conf.options.monitor) printf("    _mon.Start();\n");
 }
 

@@ -20,6 +20,7 @@ typedef enum MinorType {
     VAR_PREFIX_LEN,
     VAR_NAME,
     VAR_ASN,
+    VAR_PATH,
     TKN_LBRACE,
     TKN_RBRACE,
     TKN_SEMICOL,
@@ -52,6 +53,9 @@ typedef enum MinorType {
     KW_DEFAULT_ACTION,
     KW_ACCEPT,
     KW_REJECT,
+    KW_MONITOR,
+    KW_MONITOR_TRIGGER,
+    KW_MONITOR_OUTPUT,
     BOOL_TRUE,
     BOOL_FALSE
 } MinorType;
@@ -75,6 +79,7 @@ LexOut any(const Lexers lexs, std::string &in);
 LexOut lex_addr(std::string &in);
 LexOut lex_prefix_len(std::string &in);
 LexOut lex_name(std::string &in);
+LexOut lex_path(std::string &in);
 LexOut lex_asn(std::string &in);
 LexOut lex_keyword(std::string &in);
 LexOut lex_token(std::string &in);

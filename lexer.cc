@@ -1,5 +1,4 @@
 #include "lexer.h"
-#include <iostream>
 
 LexOut eat_garbage(std::string &in) {
     std::regex r_space ("^ *\t*(#.*\n)? *\t*");
@@ -73,6 +72,22 @@ LexOut lex_name(std::string &in) {
     } else return LexOut (false, NULL);
 }
 
+LexOut lex_path(std::string &in) {
+    std::regex r_path ("^\\/?([a-zA-Z0-9\\-_]*\\/?)+");
+    std::smatch m_path;
+
+    if (std::regex_search(in, m_path, r_path)) {
+        auto lex_item = new LexicalItem;
+        lex_item->type = Type::VAR;
+        lex_item->mtype = MinorType::VAR_PATH;
+        lex_item->item = m_path[0];
+
+        str_shift(in, lex_item->item.length());
+        return LexOut (true, lex_item);
+    } else return LexOut (false, NULL);
+}
+
+
 LexOut lex_asn(std::string &in) {
     std::regex r_asn ("^[0-9]+");
     std::smatch m_asn;
@@ -89,7 +104,7 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local|(in|out)_filter|default_action|accept|reject)( |;|\\{)");
+    std::regex r_kw ("^(monitor(_trigger|_output)?|network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local|(in|out)_filter|default_action|accept|reject)( |;|\\{)");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
@@ -125,6 +140,9 @@ LexOut lex_keyword(std::string &in) {
         if (lex_item->item == "in_filter") lex_item->mtype = MinorType::KW_IN_FILTER;
         if (lex_item->item == "out_filter") lex_item->mtype = MinorType::KW_OUT_FILTER;
         if (lex_item->item == "default_action") lex_item->mtype = MinorType::KW_DEFAULT_ACTION;
+        if (lex_item->item == "monitor_trigger") lex_item->mtype = MinorType::KW_MONITOR_TRIGGER;
+        if (lex_item->item == "monitor_output") lex_item->mtype = MinorType::KW_MONITOR_OUTPUT;
+        if (lex_item->item == "monitor") lex_item->mtype = MinorType::KW_MONITOR;
 
         return LexOut (true, lex_item);
 
@@ -202,6 +220,7 @@ LexResult lexer(const std::string &in_c, LexicalItems &out) {
     lexs.push_back(&lex_addr);
     lexs.push_back(&lex_prefix_len);
     lexs.push_back(&lex_asn);
+    lexs.push_back(&lex_path);
 
     while (in.length() > 0) {
         eat_garbage(in);
