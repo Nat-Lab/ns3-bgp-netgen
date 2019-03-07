@@ -76,7 +76,7 @@ void generate (SimulationConfigurtion &conf) {
             generate_device_setup(net_name, router_name, device_name, device.address, device.len);
         }
 
-        if (router.asn == 0) continue; // router does not has BGP
+        //if (router.asn == 0) continue; // router does not has BGP
 
         std::string bgp_app_name = "_bgp_" + router.name;
         printf("    BGPHelper %s (%d);\n", bgp_app_name.c_str(), router.asn);
