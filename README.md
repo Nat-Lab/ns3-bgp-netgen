@@ -193,7 +193,7 @@ Filter rules are check by order, and the last result will be taken as the final 
 A routes block define routes that are initially in a BGP router's NLRI (Network Layer Reachability Information). It must be used inside the `router {}` block. It has only one option, `route`, which define a route. `route` option has the following syntax:
 
 ```
-route <network_prefix>/<prefix_length> via <nexthop_address> dev <device_name> [local];
+route <network_prefix>/<prefix_length> [via <nexthop_address>] dev <device_name> [local];
 ```
 
 Where `network_prefix/prefix_length` identifies the network, `nexthop_address` specify the network, and `device_name` define the device that nexthop is on. Optionally, you can set the route as local with `local`. This will instruct `BGPSpeaker` not to send this route to its peer.
@@ -203,14 +203,14 @@ For example:
 ```
 routes {
     route 0.0.0.0/0 via 10.254.0.1 dev dev_internet local;
-    route 10.254.0.0/16 via 10.254.0.254 dev dev_internet;
+    route 10.254.0.0/16 dev dev_internet;
 }
 ```
 Will do ns3 equivalent of iproute2 commands:
 
 ```
 ip rou add 0.0.0.0/0 via 10.254.0.1 dev dev_internet
-ip rou add 10.254.0.0/16 via 10.254.0.254 dev dev_internet
+ip rou add 10.254.0.0/16 dev dev_internet
 ```
 
 And the route 0.0.0.0/0 will be local (so it won't be sent to BGP peers).

@@ -294,6 +294,10 @@ ParOut par_routes (const LexicalItems &in, uint32_t offset, Routes &out) {
         r.len = cur.item;
 
         cur = in[++offset];
+        if (cur.mtype == MinorType::KW_DEV) {
+            r.nexthop = "0.0.0.0";
+            goto p_r_dev;
+        }
         if (cur.mtype != MinorType::KW_VIA) return ParOut (false, offset);
 
         cur = in[++offset];
@@ -303,6 +307,7 @@ ParOut par_routes (const LexicalItems &in, uint32_t offset, Routes &out) {
         cur = in[++offset];
         if (cur.mtype != MinorType::KW_DEV) return ParOut (false, offset);
 
+        p_r_dev:
         cur = in[++offset];
         if (cur.mtype != MinorType::VAR_NAME) return ParOut (false, offset);
         r.device = cur.item;
