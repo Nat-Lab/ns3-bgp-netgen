@@ -53,6 +53,7 @@ typedef enum MinorType {
     KW_DEFAULT_ACTION,
     KW_ACCEPT,
     KW_REJECT,
+    KW_EXACT,
     KW_MONITOR,
     KW_MONITOR_TRIGGER,
     KW_MONITOR_OUTPUT,

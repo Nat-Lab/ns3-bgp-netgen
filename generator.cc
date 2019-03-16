@@ -93,8 +93,8 @@ void generate (SimulationConfigurtion &conf) {
             else printf("    %s.in_filter->default_op = BGPFilterOP::REJECT;\n", filter_var.c_str());
             for (auto filter : peer.in_filter.filters) {
                 if (filter.is_accept)
-                    printf("    %s.in_filter->append (BGPFilterOP::ACCEPT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
-                else printf("    %s.in_filter->append (BGPFilterOP::REJECT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
+                    printf("    %s.in_filter->append (BGPFilterOP::ACCEPT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"), %s);\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str(), filter.is_exact ? "true" : "false");
+                else printf("    %s.in_filter->append (BGPFilterOP::REJECT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"), %s);\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str(), filter.is_exact ? "true" : "false");
             }
 
             if (peer.out_filter.filter_defualt_accept)
@@ -102,8 +102,8 @@ void generate (SimulationConfigurtion &conf) {
             else printf("    %s.out_filter->default_op = BGPFilterOP::REJECT;\n", filter_var.c_str());
             for (auto filter : peer.out_filter.filters) {
                 if (filter.is_accept)
-                    printf("    %s.out_filter->append (BGPFilterOP::ACCEPT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
-                else printf("    %s.out_filter->append (BGPFilterOP::REJECT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"));\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str());
+                    printf("    %s.out_filter->append (BGPFilterOP::ACCEPT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"), %s);\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str(), filter.is_exact ? "true" : "false");
+                else printf("    %s.out_filter->append (BGPFilterOP::REJECT, Ipv4Address(\"%s\"), Ipv4Mask(\"%s\"), %s);\n", filter_var.c_str(), filter.prefix.c_str(), filter.len.c_str(), filter.is_exact ? "true" : "false");
             }
         }
             

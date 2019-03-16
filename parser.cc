@@ -162,8 +162,14 @@ ParOut par_filter (const LexicalItems &in, uint32_t offset, Filters &out) {
             case MinorType::KW_REJECT: {
                 Filter f;
                 f.is_accept = cur.mtype == MinorType::KW_ACCEPT;
+                f.is_exact = false;
 
                 cur = in[++offset];
+                if (cur.mtype == MinorType::KW_EXACT) {
+                    f.is_exact = true;
+                    cur = in[++offset];
+                }
+
                 if (cur.mtype != MinorType::VAR_ADDR) return ParOut (false, offset);
                 f.prefix = cur.item;
 
