@@ -178,13 +178,14 @@ peers {
         }
         out_filter {
             reject 10.254.0.0/24;
+            reject exact 10.0.0.0/8;
         }
     };
 }
 ```
 
 Will filter out any ingress routes by default and accept any subnet inside 10.0.0.0/8 (so something like 10.1.0.0/24 will be accepted), but if the route is 10.254.0.0/24 or any subnet of 10.254.0.0/24, that route will again be rejected. And if will not announce 10.254.0.0/24 or 
-subnet of 10.254.0.0/24, since that was rejected in `out_filter`.
+subnet of 10.254.0.0/24, since that was rejected in `out_filter`. Optionally, `exact` keyword can be used to specify that this filter should be an exact match. (i.e. don't match subnet of target network.)
 
 Filter rules are check by order, and the last result will be taken as the final decision. If there is no match for a subnet in filter rules, `default_action` will be taken. If no  `default_action` was set, the route will be accepted.
 
