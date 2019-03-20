@@ -192,6 +192,8 @@ LexOut lex_bool(const char *in, LexicalItems &out) {
 }
 
 LexOut lexer(const char *in, LexicalItems &out) {
+    auto tail = in + strlen(in);
+
     Lexers lexs;
     lexs.push_back(&lex_comment);
     lexs.push_back(&lex_keyword);
@@ -207,8 +209,12 @@ LexOut lexer(const char *in, LexicalItems &out) {
 
     while (strlen(in) > 0) {
         auto r = any(lexs, in, out);
-        if(!std::get<0> (r)) return LexOut (false, in);
+
+        if (!std::get<0> (r)) return LexOut (false, in);
         else in = std::get<1>(r);
+
+        if (in > tail) return LexOut (false, tail);
+
         in = eat_space(in);
     }
 
