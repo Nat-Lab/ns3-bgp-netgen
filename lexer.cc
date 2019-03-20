@@ -20,7 +20,7 @@ LexOut any(const Lexers &lexs, const char *in, LexicalItems &out) {
 LexOut lex_addr(const char *in, LexicalItems &out) {
     std::cmatch m_v4;
 
-    if (std::regex_search(in, m_v4, r_v4)) {
+    if (std::regex_search(in, m_v4, r_v4, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::VAR;
         lex_item.mtype = MinorType::VAR_ADDR;
@@ -34,7 +34,7 @@ LexOut lex_addr(const char *in, LexicalItems &out) {
 LexOut lex_prefix_len(const char *in, LexicalItems &out) {
     std::cmatch m_len;
 
-    if (std::regex_search(in, m_len, r_len)) {
+    if (std::regex_search(in, m_len, r_len, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::VAR;
         lex_item.mtype = MinorType::VAR_PREFIX_LEN;
@@ -48,7 +48,7 @@ LexOut lex_prefix_len(const char *in, LexicalItems &out) {
 LexOut lex_name(const char *in, LexicalItems &out) {
     std::cmatch m_name;
 
-    if (std::regex_search(in, m_name, r_name)) {
+    if (std::regex_search(in, m_name, r_name, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::VAR;
         lex_item.mtype = MinorType::VAR_NAME;
@@ -62,7 +62,7 @@ LexOut lex_name(const char *in, LexicalItems &out) {
 LexOut lex_path(const char *in, LexicalItems &out) {
     std::cmatch m_path;
 
-    if (std::regex_search(in, m_path, r_path)) {
+    if (std::regex_search(in, m_path, r_path, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::VAR;
         lex_item.mtype = MinorType::VAR_PATH;
@@ -77,7 +77,7 @@ LexOut lex_path(const char *in, LexicalItems &out) {
 LexOut lex_asn(const char *in, LexicalItems &out) {
     std::cmatch m_asn;
 
-    if (std::regex_search(in, m_asn, r_asn)) {
+    if (std::regex_search(in, m_asn, r_asn, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::VAR;
         lex_item.mtype = MinorType::VAR_ASN;
@@ -91,7 +91,7 @@ LexOut lex_asn(const char *in, LexicalItems &out) {
 LexOut lex_keyword(const char *in, LexicalItems &out) {
     std::cmatch m_kw;
 
-    if (std::regex_search(in, m_kw, r_kw)) {
+    if (std::regex_search(in, m_kw, r_kw, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::KEYWORD;
         lex_item.item = m_kw[1];
@@ -137,7 +137,7 @@ LexOut lex_keyword(const char *in, LexicalItems &out) {
 LexOut lex_comment(const char *in, LexicalItems &out) {
     std::cmatch m;
 
-    if (std::regex_search(in, m, r_comment)) {
+    if (std::regex_search(in, m, r_comment, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         std::string s = m[0];
 
@@ -153,7 +153,7 @@ LexOut lex_comment(const char *in, LexicalItems &out) {
 LexOut lex_token(const char *in, LexicalItems &out) {
     std::cmatch m_token;
 
-    if (std::regex_search(in, m_token, r_token)) {
+    if (std::regex_search(in, m_token, r_token, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::TOKEN;
         lex_item.item = m_token[0];
@@ -175,7 +175,7 @@ LexOut lex_token(const char *in, LexicalItems &out) {
 LexOut lex_bool(const char *in, LexicalItems &out) {
     std::cmatch m_token;
 
-    if (std::regex_search(in, m_token, r_bool)) {
+    if (std::regex_search(in, m_token, r_bool, std::regex_constants::match_continuous)) {
         LexicalItem lex_item;
         lex_item.type = Type::BOOL;
         lex_item.item = m_token[1];
