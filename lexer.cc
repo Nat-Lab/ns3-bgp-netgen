@@ -1,5 +1,4 @@
 #include "lexer.h"
-#include <stdio.h>
 
 const char* eat_space(const char *in) {
     while (*in == '\t' || *in == '\r' || *in == '\n' || *in == ' ') in++;

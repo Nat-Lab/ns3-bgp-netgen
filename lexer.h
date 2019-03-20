@@ -5,8 +5,6 @@
 #include <string>
 #include <tuple>
 #include <regex>
-#include <unistd.h>
-#include <string.h>
 
 const std::regex r_v4 ("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)");
 const std::regex r_len ("^\\/[0-9]{1,2}");
