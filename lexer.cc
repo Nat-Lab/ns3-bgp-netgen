@@ -203,11 +203,13 @@ LexOut lexer(const char *in, LexicalItems &out) {
     lexs.push_back(&lex_asn);
     lexs.push_back(&lex_path);
 
-    while (strlen(in) > 1) {
-        in = eat_space(in);
+    in = eat_space(in);
+
+    while (strlen(in) > 0) {
         auto r = any(lexs, in, out);
         if(!std::get<0> (r)) return LexOut (false, in);
         else in = std::get<1>(r);
+        in = eat_space(in);
     }
 
     return LexOut (true, in);
