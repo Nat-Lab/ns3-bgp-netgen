@@ -1,7 +1,6 @@
 #include "lexer.h"
 
 LexOut eat_garbage(std::string &in) {
-    std::regex r_space ("^ *\t*(#.*\n)? *\t*");
     std::smatch m_space;
 
     if (std::regex_search(in, m_space, r_space)) {
@@ -28,7 +27,6 @@ LexOut any(const Lexers lexs, std::string &in) {
 }
 
 LexOut lex_addr(std::string &in) {
-    std::regex r_v4 ("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)");
     std::smatch m_v4;
 
     if (std::regex_search(in, m_v4, r_v4)) {
@@ -43,7 +41,6 @@ LexOut lex_addr(std::string &in) {
 }
 
 LexOut lex_prefix_len(std::string &in) {
-    std::regex r_len ("^\\/[0-9]{1,2}");
     std::smatch m_len;
 
     if (std::regex_search(in, m_len, r_len)) {
@@ -58,7 +55,6 @@ LexOut lex_prefix_len(std::string &in) {
 }
 
 LexOut lex_name(std::string &in) {
-    std::regex r_name ("^[a-zA-Z]+[a-zA-Z0-9\\-_]*");
     std::smatch m_name;
 
     if (std::regex_search(in, m_name, r_name)) {
@@ -73,7 +69,6 @@ LexOut lex_name(std::string &in) {
 }
 
 LexOut lex_path(std::string &in) {
-    std::regex r_path ("^\\/?([a-zA-Z0-9\\-_]*\\/?)+");
     std::smatch m_path;
 
     if (std::regex_search(in, m_path, r_path)) {
@@ -89,7 +84,6 @@ LexOut lex_path(std::string &in) {
 
 
 LexOut lex_asn(std::string &in) {
-    std::regex r_asn ("^[0-9]+");
     std::smatch m_asn;
 
     if (std::regex_search(in, m_asn, r_asn)) {
@@ -104,7 +98,6 @@ LexOut lex_asn(std::string &in) {
 }
 
 LexOut lex_keyword(std::string &in) {
-    std::regex r_kw ("^(monitor(_trigger|_output)?|network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local|(in|out)_filter|default_action|accept|reject|exact)( |;|\\{)");
     std::smatch m_kw;
 
     if (std::regex_search(in, m_kw, r_kw)) {
@@ -151,10 +144,9 @@ LexOut lex_keyword(std::string &in) {
 }
 
 LexOut lex_comment(std::string &in) {
-    std::regex r ("^#.*\\r?\\n");
     std::smatch m;
 
-    if (std::regex_search(in, m, r)) {
+    if (std::regex_search(in, m, r_comment)) {
         auto lex_item = new LexicalItem;
         std::string s = m[0];
         str_shift(in, s.length());
@@ -168,7 +160,6 @@ LexOut lex_comment(std::string &in) {
 }
 
 LexOut lex_token(std::string &in) {
-    std::regex r_token ("^((\\r)?\\n|;|\\{|\\})");
     std::smatch m_token;
 
     if (std::regex_search(in, m_token, r_token)) {
@@ -191,10 +182,9 @@ LexOut lex_token(std::string &in) {
 }
 
 LexOut lex_bool(std::string &in) {
-    std::regex r_token ("^(on|off|true|false)( |;)");
     std::smatch m_token;
 
-    if (std::regex_search(in, m_token, r_token)) {
+    if (std::regex_search(in, m_token, r_bool)) {
         auto lex_item = new LexicalItem;
         lex_item->type = Type::BOOL;
         lex_item->item = m_token[1];
