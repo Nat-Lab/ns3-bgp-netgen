@@ -6,9 +6,9 @@
 #include <tuple>
 #include <regex>
 #include <unistd.h>
+#include <string.h>
 
 const std::regex r_v4 ("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)");
-const std::regex r_space ("^ *\t*(#.*\n)? *\t*");
 const std::regex r_len ("^\\/[0-9]{1,2}");
 const std::regex r_name ("^[a-zA-Z]+[a-zA-Z0-9\\-_]*");
 const std::regex r_path ("^\\/?([a-zA-Z0-9\\-_]*\\/?)+");
@@ -79,24 +79,22 @@ typedef struct LexicalItem {
 } LexicalItem;
 
 typedef std::vector<LexicalItem> LexicalItems;
-typedef std::tuple<bool, LexicalItem*> LexOut;
-typedef std::tuple<bool, std::string> LexResult;
-typedef LexOut (*Lexer) (std::string &in);
+typedef std::tuple<bool, const char*> LexOut;
+typedef LexOut (*Lexer) (const char *in, LexicalItems &out);
 typedef std::vector<Lexer> Lexers;
 
-void eat_space(std::string &in);
-std::string str_shift(std::string &in, uint32_t n);
+const char* eat_space(const char *in);
 
-LexOut any(const Lexers lexs, std::string &in);
-LexOut lex_addr(std::string &in);
-LexOut lex_prefix_len(std::string &in);
-LexOut lex_name(std::string &in);
-LexOut lex_path(std::string &in);
-LexOut lex_asn(std::string &in);
-LexOut lex_keyword(std::string &in);
-LexOut lex_token(std::string &in);
-LexOut lex_bool(std::string &in);
+LexOut any(const Lexers &lexs, const char *in, LexicalItems &out);
+LexOut lex_addr(const char *in, LexicalItems &out);
+LexOut lex_prefix_len(const char *in, LexicalItems &out);
+LexOut lex_name(const char *in, LexicalItems &out);
+LexOut lex_path(const char *in, LexicalItems &out);
+LexOut lex_asn(const char *in, LexicalItems &out);
+LexOut lex_keyword(const char *in, LexicalItems &out);
+LexOut lex_token(const char *in, LexicalItems &out);
+LexOut lex_bool(const char *in, LexicalItems &out);
 
-LexResult lexer(const std::string &in_c, LexicalItems &out);
+LexOut lexer(const char *in, LexicalItems &out);
 
 #endif // BGP_CONF_L_H_
