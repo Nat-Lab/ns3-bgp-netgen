@@ -18,7 +18,7 @@ int main (int argc, char **argv) {
     preprocessor_apply(in);
 
     LexicalItems lex_out;
-    auto lex_ret = lexer(in, lex_out);
+    auto lex_ret = lexer(in.c_str(), lex_out);
 
     if (!std::get<0> (lex_ret)) {
         std::cerr << "Lexer returned error." << std::endl;
