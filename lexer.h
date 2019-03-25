@@ -11,7 +11,7 @@ const std::regex r_len ("^\\/[0-9]{1,2}");
 const std::regex r_name ("^[a-zA-Z]+[a-zA-Z0-9\\-_]*");
 const std::regex r_path ("^\\/?([a-zA-Z0-9\\-_]*\\/?)+");
 const std::regex r_asn ("^[0-9]+");
-const std::regex r_kw ("^(monitor(_trigger|_output)?|network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local|(in|out)_filter|default_action|accept|reject|exact)( |;|\\{)");
+const std::regex r_kw ("^(monitor(_trigger|_output)?|network|prefix|tap(_name|_mode|_address)?|router|as|dev(ices?)?|peers?|routes?|connect|address|via|options|log|passive|local|(in|out)_filter|default_action|accept|reject|exact|realtime|checksum)( |;|\\{)");
 const std::regex r_comment ("^#.*\\r?\\n");
 const std::regex r_token ("^((\\r)?\\n|;|\\{|\\})");
 const std::regex r_bool ("^(on|off|true|false)( |;)");
@@ -66,6 +66,8 @@ typedef enum MinorType {
     KW_MONITOR,
     KW_MONITOR_TRIGGER,
     KW_MONITOR_OUTPUT,
+    KW_CHECKSUM,
+    KW_REALTIME,
     BOOL_TRUE,
     BOOL_FALSE
 } MinorType;

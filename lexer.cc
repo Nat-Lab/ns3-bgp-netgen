@@ -126,6 +126,8 @@ LexOut lex_keyword(const char *in, LexicalItems &out) {
         if (lex_item.item == "monitor_trigger") lex_item.mtype = MinorType::KW_MONITOR_TRIGGER;
         if (lex_item.item == "monitor_output") lex_item.mtype = MinorType::KW_MONITOR_OUTPUT;
         if (lex_item.item == "monitor") lex_item.mtype = MinorType::KW_MONITOR;
+        if (lex_item.item == "realtime") lex_item.mtype = MinorType::KW_REALTIME;
+        if (lex_item.item == "checksum") lex_item.mtype = MinorType::KW_CHECKSUM;
 
         out.push_back(lex_item);
         return LexOut (true, in + lex_item.item.size());

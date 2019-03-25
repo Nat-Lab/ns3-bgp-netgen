@@ -65,6 +65,8 @@ typedef struct Options {
     bool monitor;
     std::string monitor_trigger;
     std::string monitor_output;
+    bool checksum;
+    bool realtime;
 } Options;
 
 typedef struct SimulationConfigurtion {

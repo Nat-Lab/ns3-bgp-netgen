@@ -14,8 +14,6 @@ void generate_header() {
 using namespace ns3;
 int main () {
     InternetStackHelper _inet;
-    GlobalValue::Bind("SimulatorImplementationType", StringValue("ns3::RealtimeSimulatorImpl"));
-    GlobalValue::Bind("ChecksumEnabled", BooleanValue (true));
 ).";
 }
 
@@ -41,6 +39,12 @@ void generate_device_setup(std::string ch, std::string node, std::string dev_nam
 }
 
 void generate (SimulationConfigurtion &conf) {
+    if (conf.options.realtime)
+        printf("    GlobalValue::Bind(\"SimulatorImplementationType\", StringValue(\"ns3::RealtimeSimulatorImpl\");\n");
+    
+    if (conf.options.checksum)
+        printf("    GlobalValue::Bind(\"ChecksumEnabled\", BooleanValue (true));\n");
+
     for (auto option : conf.options.log) {
         printf("    LogComponentEnable(\"%s\", LOG_LEVEL_ALL);\n", option.c_str());
     }
