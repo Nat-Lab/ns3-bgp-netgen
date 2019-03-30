@@ -491,8 +491,6 @@ ParOut par_options(const LexicalItems &in, uint32_t offset, SimulationConfigurti
 }
 
 ParOut parse(const LexicalItems &in, SimulationConfigurtion &out) {
-    memset(&out, 0, sizeof(SimulationConfigurtion));
-
     uint32_t offset = 0;
     auto cur = in[offset];
     if (cur.type != Type::KEYWORD) return ParOut (false, offset);
