@@ -40,7 +40,7 @@ void generate_device_setup(std::string ch, std::string node, std::string dev_nam
 
 void generate (SimulationConfigurtion &conf) {
     if (conf.options.realtime)
-        printf("    GlobalValue::Bind(\"SimulatorImplementationType\", StringValue(\"ns3::RealtimeSimulatorImpl\");\n");
+        printf("    GlobalValue::Bind(\"SimulatorImplementationType\", StringValue(\"ns3::RealtimeSimulatorImpl\"));\n");
     
     if (conf.options.checksum)
         printf("    GlobalValue::Bind(\"ChecksumEnabled\", BooleanValue (true));\n");
