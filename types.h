@@ -1,3 +1,6 @@
+#include <vector>
+#include <string>
+
 typedef struct Network {
     std::string name;
     std::string prefix;
