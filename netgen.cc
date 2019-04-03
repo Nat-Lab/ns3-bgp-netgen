@@ -45,9 +45,7 @@ int main (int argc, char **argv) {
         return 1;
     }
 
-    generate_header ();
     generate (par_out);
-    generate_footer ();
 
     return 0;
 }

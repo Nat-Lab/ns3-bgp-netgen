@@ -94,9 +94,7 @@ int main (int argc, char **argv) {
 		conf.routers.push_back(r);
 	}
 
-	generate_header();
 	generate(conf);
-	generate_footer();
 
 	return 0;
 }

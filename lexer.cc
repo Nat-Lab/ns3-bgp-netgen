@@ -128,6 +128,8 @@ LexOut lex_keyword(const char *in, LexicalItems &out) {
         if (lex_item.item == "monitor") lex_item.mtype = MinorType::KW_MONITOR;
         if (lex_item.item == "realtime") lex_item.mtype = MinorType::KW_REALTIME;
         if (lex_item.item == "checksum") lex_item.mtype = MinorType::KW_CHECKSUM;
+        if (lex_item.item == "prio_queue") lex_item.mtype = MinorType::KW_PRIO_QUEUE;
+        if (lex_item.item == "prio_queue_callback") lex_item.mtype = MinorType::KW_PRIO_QUEUE_CALLBACK;
 
         out.push_back(lex_item);
         return LexOut (true, in + lex_item.item.size());
@@ -192,6 +194,27 @@ LexOut lex_bool(const char *in, LexicalItems &out) {
     } else return LexOut (false, NULL);
 }
 
+LexOut lex_inline(const char *in, LexicalItems &out) {
+    std::cmatch m_inline;
+
+    if (std::regex_search(in, m_inline, r_inline, std::regex_constants::match_continuous)) {
+        LexicalItem lex_item_var;
+        lex_item_var.type = Type::VAR;
+        lex_item_var.mtype = MinorType::VAR_INLINE_VAR;
+        lex_item_var.item = m_inline[2];
+        out.push_back(lex_item_var);
+
+        LexicalItem lex_item_code;
+        lex_item_code.type = Type::VAR;
+        lex_item_code.mtype = MinorType::VAR_INLINE_CODE;
+        lex_item_code.item = m_inline[3];
+        out.push_back(lex_item_code);
+
+        size_t tot_len = m_inline[1].str().size();
+        return LexOut (true, in + tot_len);
+    } else return LexOut (false, NULL);
+}
+
 LexOut lexer(const char *in, LexicalItems &out) {
     auto tail = in + strlen(in);
 
@@ -200,6 +223,7 @@ LexOut lexer(const char *in, LexicalItems &out) {
     lexs.push_back(&lex_keyword);
     lexs.push_back(&lex_token);
     lexs.push_back(&lex_bool);
+    lexs.push_back(&lex_inline);
     lexs.push_back(&lex_name);
     lexs.push_back(&lex_addr);
     lexs.push_back(&lex_prefix_len);

@@ -2,33 +2,41 @@
 #include "parser.h"
 #include "generator.h"
 
-void generate_header() {
+void generate_header(SimulationConfigurtion &conf) {
     std::cout << R".(#include "ns3/core-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/bgp-helper.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/tap-bridge-module.h"
-#include "ns3/drop-tail-queue.h"
-#include "ns3/bgp-monitor.h"
-using namespace ns3;
-int main () {
-    InternetStackHelper _inet;
-).";
+#include "ns3/bgp-monitor.h")." << std::endl;
+    if (conf.options.prio_queue)
+        std::cout << R".(#include "ns3/prio-queue.h")." << std::endl;
+    else
+        std::cout << R".(#include "ns3/drop-tail-queue.h")." << std::endl;
+    std::cout << R".(using namespace ns3;)." << std::endl;
+    if (conf.options.prio_queue) {
+        std::cout << "bool _prio_queue_cb(Ptr<const Packet> " << conf.options.prio_queue_var << ") {" << conf.options.prio_queue_code << std::endl << "}" << std::endl;
+    }
+    std::cout << R".(int main () {
+    InternetStackHelper _inet;)." << std::endl;
 }
 
-void generate_footer() {
+void generate_footer(SimulationConfigurtion &conf) {
     std::cout << R".(    Simulator::Run();
     return 0;
 }
 ).";
 }
 
-void generate_device_setup(std::string ch, std::string node, std::string dev_name, std::string addr, std::string mask) {
+void generate_device_setup(std::string ch, std::string node, std::string dev_name, std::string addr, std::string mask, Options &options) {
     printf("    Ptr<CsmaNetDevice> %s = CreateObject<CsmaNetDevice> ();\n", dev_name.c_str());
     printf("    %s->SetAddress (Mac48Address::Allocate ());\n", dev_name.c_str());
     printf("    %s->AddDevice(%s);\n", node.c_str(), dev_name.c_str());
-    printf("    Ptr<Queue<Packet>> _queue_%s = CreateObject<DropTailQueue<Packet>> ();\n", dev_name.c_str());
+    if (options.prio_queue) {
+        printf("    Ptr<PrioQueue<Packet>> _queue_%s = CreateObject<PrioQueue<Packet>> ();\n", dev_name.c_str());
+        printf("    _queue_%s->SetPrioCallback (MakeCallback(&_prio_queue_cb));\n", dev_name.c_str());
+    } else printf("    Ptr<Queue<Packet>> _queue_%s = CreateObject<DropTailQueue<Packet>> ();\n", dev_name.c_str());
     printf("    %s->SetQueue (_queue_%s);\n", dev_name.c_str(), dev_name.c_str());
     printf("    %s->Attach (%s);\n", dev_name.c_str(), ch.c_str());
     printf("    int32_t %s_id = _ipv4_%s->AddInterface(%s);\n", dev_name.c_str(), node.c_str(), dev_name.c_str());
@@ -38,7 +46,7 @@ void generate_device_setup(std::string ch, std::string node, std::string dev_nam
     printf("    _ipv4_%s->SetUp(%s_id);\n", node.c_str(), dev_name.c_str());
 }
 
-void generate (SimulationConfigurtion &conf) {
+void generate_body (SimulationConfigurtion &conf) {
     if (conf.options.realtime)
         printf("    GlobalValue::Bind(\"SimulatorImplementationType\", StringValue(\"ns3::RealtimeSimulatorImpl\"));\n");
     
@@ -61,7 +69,7 @@ void generate (SimulationConfigurtion &conf) {
             printf("    Ptr<Node> %s = CreateObject<Node> ();\n", node.c_str());
             printf("    _inet.Install(NodeContainer (%s));\n", node.c_str());
             printf("    Ptr<Ipv4> _ipv4_%s = %s->GetObject<Ipv4> ();\n", node.c_str(), node.c_str());
-            generate_device_setup(ch, node, dev, net.tap_address, net.tap_address_len);
+            generate_device_setup(ch, node, dev, net.tap_address, net.tap_address_len, conf.options);
             printf("    TapBridgeHelper _tbh_%s;\n", net.name.c_str());
             printf("    _tbh_%s.SetAttribute (\"DeviceName\", StringValue(\"%s\"));\n", net.name.c_str(), net.tap_name.c_str());
             printf("    _tbh_%s.SetAttribute (\"Mode\", StringValue(\"%s\"));\n", net.name.c_str(), net.tap_mode.c_str());
@@ -77,7 +85,7 @@ void generate (SimulationConfigurtion &conf) {
         for (auto device : router.devices) {
             std::string net_name = "_net_" + device.connect_to;
             std::string device_name = "_dev_" + router.name + "_" + device.name;
-            generate_device_setup(net_name, router_name, device_name, device.address, device.len);
+            generate_device_setup(net_name, router_name, device_name, device.address, device.len, conf.options);
         }
 
         //if (router.asn == 0) continue; // router does not has BGP
@@ -122,5 +130,11 @@ void generate (SimulationConfigurtion &conf) {
     }
     
     if (conf.options.monitor) printf("    _mon.Start();\n");
+}
+
+void generate (SimulationConfigurtion &conf) {
+    generate_header(conf);
+    generate_body(conf);
+    generate_footer(conf);
 }
 

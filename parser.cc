@@ -408,8 +408,10 @@ ParOut par_options(const LexicalItems &in, uint32_t offset, SimulationConfigurti
     cur = in[++offset];
     if (cur.type != Type::KEYWORD) return ParOut (false, offset);
 
+    out.options.monitor = false;
     out.options.checksum = true;
     out.options.realtime = true;
+    out.options.prio_queue = false;
 
     bool parsed = false;
     do {
@@ -474,6 +476,32 @@ ParOut par_options(const LexicalItems &in, uint32_t offset, SimulationConfigurti
                 cur = in[++offset];
                 if (cur.type != Type::BOOL) return ParOut (false, offset);
                 out.options.realtime = cur.mtype == MinorType::BOOL_TRUE;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                parsed = true;
+                continue;
+            case MinorType::KW_PRIO_QUEUE:
+                cur = in[++offset];
+                if (cur.type != Type::BOOL) return ParOut (false, offset);
+                out.options.prio_queue = cur.mtype == MinorType::BOOL_TRUE;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);
+
+                cur = in[++offset];
+                parsed = true;
+                continue;
+            case MinorType::KW_PRIO_QUEUE_CALLBACK:
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_INLINE_VAR) return ParOut (false, offset);
+                out.options.prio_queue_var = cur.item;
+
+                cur = in[++offset];
+                if (cur.mtype != MinorType::VAR_INLINE_CODE) return ParOut (false, offset);
+                out.options.prio_queue_code = cur.item;
 
                 cur = in[++offset];
                 if (cur.mtype != MinorType::TKN_SEMICOL) return ParOut (false, offset);

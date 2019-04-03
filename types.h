@@ -70,6 +70,9 @@ typedef struct Options {
     std::string monitor_output;
     bool checksum;
     bool realtime;
+    bool prio_queue;
+    std::string prio_queue_var;
+    std::string prio_queue_code;
 } Options;
 
 typedef struct SimulationConfigurtion {
